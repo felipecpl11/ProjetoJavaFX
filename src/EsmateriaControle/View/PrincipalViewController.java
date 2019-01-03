@@ -54,6 +54,8 @@ public class PrincipalViewController {
         System.out.println("adsadasda");
         
         funcionariosTable.setItems(funcionariosData);
+        
+        System.out.println("adsadasda");
 
     }
 
