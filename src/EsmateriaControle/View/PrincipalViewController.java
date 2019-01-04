@@ -11,13 +11,29 @@ import Model.Pessoa;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBoxBuilder;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 /**
  *
@@ -28,6 +44,12 @@ public class PrincipalViewController {
     @FXML
     private TableView<Funcionario> funcionariosTable;
 
+    @FXML
+    private ContextMenu contextMenu;
+    
+    @FXML
+    private MenuItem menuItem1;
+    
     @FXML
     private Button butonClik;
 
@@ -47,43 +69,90 @@ public class PrincipalViewController {
         //funcionariosTable.setItems(FXCollections.observableArrayList(funcionarios));
         ObservableList<Funcionario> funcionariosData = FXCollections.observableArrayList();
         funcionariosData.add(new Funcionario("teste"));
-        
+
         //funcionariosTable.setItems(funcionariosData);
-        
         coluna.setCellValueFactory(cellData -> cellData.getValue().getNome());
         System.out.println("adsadasda");
-        
+
         funcionariosTable.setItems(funcionariosData);
-        
+
         System.out.println("adsadasda");
 
     }
 
-    @FXML
-    private void initialize() {
+    public void inserirValorColuna() {
+        ObservableList<Funcionario> funcionariosData = FXCollections.observableArrayList();
+        funcionariosData.add(new Funcionario("teste"));
+        coluna.setCellValueFactory(cellData -> cellData.getValue().getNome());
+        System.out.println("adsadasda");
 
-        List pessoas = Arrays.asList(
-                new Pessoa("William", 32, "william@email.com")
-        );
+        funcionariosTable.setItems(funcionariosData);
+    }
 
-        List funcionarios = Arrays.asList(new Funcionario("Williamm")
-        );
-
-        System.out.println("passei aqui");
+    public void criarColuna() {
         coluna = new TableColumn<>("Nome");
         coluna.setCellValueFactory(new PropertyValueFactory<>("nome"));
 
-        //funcionariosTable.setItems(FXCollections.observableArrayList(funcionarios));
         funcionariosTable.getColumns().addAll(coluna);
+    }
 
-        //funcionariosTable.setItems(FXCollections.observableArrayList(funcionarios));
-        //funcionariosTable.getColumns().addAll(colunaNome);
-        //TODO
+    public void verificarClickeEmCelula1() {
+        ObservableList<TablePosition> selectedCells = funcionariosTable.getSelectionModel().getSelectedCells();
+        selectedCells.addListener((ListChangeListener.Change<? extends TablePosition> change) -> {
+            if (selectedCells.size() > 0) {
+                System.out.println("qweqweqwe");
+                TablePosition selectedCell = selectedCells.get(0);
+                TableColumn column = selectedCell.getTableColumn();
+                if (column != null) {
+                    int rowIndex = selectedCell.getRow();
+                    Object data = column.getCellObservableValue(rowIndex).getValue();
+                }
+            }
+        });
+    }
+
+    //CRIA UMA CENA APOS O CLICK
+    public void verificarClickeEmCelula2() {
+        ObservableList<TablePosition> selectedCells = funcionariosTable.getSelectionModel().getSelectedCells();
+        selectedCells.addListener((ListChangeListener.Change<? extends TablePosition> change) -> {
+            if (selectedCells.size() > 0) {
+                System.out.println("qweqweqwe");
+                TablePosition selectedCell = selectedCells.get(0);
+                TableColumn column = selectedCell.getTableColumn();
+                if (column != null) {
+                    int rowIndex = selectedCell.getRow();
+                    Object data = column.getCellObservableValue(rowIndex).getValue();
+                    Stage myDialog = new Stage();
+                    myDialog.initModality(Modality.WINDOW_MODAL);
+
+                    Scene myDialogScene = new Scene(VBoxBuilder.create()
+                            .children(new Text("Hello! it's My Dialog."))
+                            .alignment(Pos.CENTER)
+                            .padding(new Insets(10))
+                            .build());
+
+                    myDialog.setScene(myDialogScene);
+                    myDialog.show();
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void initialize() {
+        criarColuna();
+        inserirValorColuna();
+        verificarClickeEmCelula1();
         /*
-        // Inicializa a tablea de pessoa com duas colunas.
-        firstNameColumn.setCellValueFactory(cellData -> cellData.getValue().firstNameProperty());
-        lastNameColumn.setCellValueFactory(cellData -> cellData.getValue().lastNameProperty());
+        funcionariosTable.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener() {
+            @Override
+            public void changed(ObservableValue observable, Object oldValue, Object newValue) {
+                
+            }
+        });
          */
+
     }
 
     public void setMainApp(MainApp mainApp) {
