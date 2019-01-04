@@ -8,6 +8,7 @@ package EsmateriaControle.View;
 import EsmateriaControle.MainApp;
 import Model.Funcionario;
 import Model.Pessoa;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +17,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,6 +32,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBoxBuilder;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -46,10 +49,10 @@ public class PrincipalViewController {
 
     @FXML
     private ContextMenu contextMenu;
-    
+
     @FXML
     private MenuItem menuItem1;
-    
+
     @FXML
     private Button butonClik;
 
@@ -65,26 +68,16 @@ public class PrincipalViewController {
     private void onAction() {
         System.out.println("adsadasda");
 
-        //List<Funcionario> funcionarios = Arrays.asList(new Funcionario("Williamm"));
-        //funcionariosTable.setItems(FXCollections.observableArrayList(funcionarios));
-        ObservableList<Funcionario> funcionariosData = FXCollections.observableArrayList();
-        funcionariosData.add(new Funcionario("teste"));
-
-        //funcionariosTable.setItems(funcionariosData);
-        coluna.setCellValueFactory(cellData -> cellData.getValue().getNome());
-        System.out.println("adsadasda");
-
-        funcionariosTable.setItems(funcionariosData);
-
-        System.out.println("adsadasda");
-
+        criarColuna();
+        inserirValorColuna("vai");
     }
 
-    public void inserirValorColuna() {
+    public void inserirValorColuna(String valor) {
+        System.out.println("inserirValorColuna");
         ObservableList<Funcionario> funcionariosData = FXCollections.observableArrayList();
-        funcionariosData.add(new Funcionario("teste"));
+        funcionariosData.add(new Funcionario(valor));
         coluna.setCellValueFactory(cellData -> cellData.getValue().getNome());
-        System.out.println("adsadasda");
+        
 
         funcionariosTable.setItems(funcionariosData);
     }
@@ -111,8 +104,27 @@ public class PrincipalViewController {
         });
     }
 
-    //CRIA UMA CENA APOS O CLICK
+    //CRIA UM CONTEXT MENU APOS CLICK
     public void verificarClickeEmCelula2() {
+        ObservableList<TablePosition> selectedCells = funcionariosTable.getSelectionModel().getSelectedCells();
+        selectedCells.addListener((ListChangeListener.Change<? extends TablePosition> change) -> {
+            if (selectedCells.size() > 0) {
+                System.out.println("qweqweqwe");
+                TablePosition selectedCell = selectedCells.get(0);
+                TableColumn column = selectedCell.getTableColumn();
+                if (column != null) {
+                    int rowIndex = selectedCell.getRow();
+                    Object data = column.getCellObservableValue(rowIndex).getValue();
+                    System.out.println(data.toString());
+                    contextMenu.show(funcionariosTable, 0, 0);
+
+                }
+            }
+        });
+    }
+
+    //CRIA UMA CENA APOS CLICK
+    public void verificarClickeEmCelula3() {
         ObservableList<TablePosition> selectedCells = funcionariosTable.getSelectionModel().getSelectedCells();
         selectedCells.addListener((ListChangeListener.Change<? extends TablePosition> change) -> {
             if (selectedCells.size() > 0) {
@@ -140,9 +152,15 @@ public class PrincipalViewController {
 
     @FXML
     private void initialize() {
+        System.out.println("initialize");
+        contextMenu = new ContextMenu();
+        contextMenu.setAutoFix(true);
+        contextMenu.setAutoHide(true);
+        menuItem1 = new MenuItem("teaste");
+        contextMenu.getItems().add(menuItem1);
         criarColuna();
-        inserirValorColuna();
-        verificarClickeEmCelula1();
+        inserirValorColuna("teste");
+        verificarClickeEmCelula2();
         /*
         funcionariosTable.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener() {
